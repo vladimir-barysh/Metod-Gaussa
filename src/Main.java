@@ -1,8 +1,7 @@
-import java.io.*;
 import java.util.*;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
 
         //чтение матриц из файлов
         String fileA = "matrixA.txt";
@@ -13,11 +12,19 @@ public class Main {
 
         double[][] matrixA = matrixListA.toArray(new double[0][]);
 
+
         int n = matrixListB.size();
+        double[][] matrixACopy = new double[n][n];
+        for (int i = 0; i < n; ++i){
+            for (int j = 0; j < n; ++j) {
+                matrixACopy[i][j] = matrixA[i][j];
+            }
+        }
         double[] matrixB = new double[n];
         for (int i = 0; i < n; i++) {
             matrixB[i] = matrixListB.get(i);
         }
+
         //вычисление
         GaussSystem result = MatrixOperations.gaussElimination(matrixA, matrixB);
 
@@ -32,7 +39,8 @@ public class Main {
         }
 
         // Вычисление обратной матрицы
-        double[][] inverse = invertMatrix(matrixA);
+        double det = result.getDeterminant();
+        double[][] inverse = MatrixOperations.invertMatrix(matrixACopy);
 
 
         // Вывод результатов
@@ -62,14 +70,18 @@ public class Main {
             System.out.println(result.getDeterminant());
 
             System.out.println("Невязки:");
-            for (int k = 0; i < n; i++) {
-                System.out.printf("r%d = %.6e%n", i + 1, nevyazka[i]);
+            for (int k = 0; k < n; k++) {
+                System.out.printf("r%d = %.6e%n", k + 1, nevyazka[k]);
             }
             System.out.println();
 
-
+            System.out.println("Обратная матрица");
+            for (int k = 0; k < n; ++k){
+                for (int j = 0; j < n; ++j){
+                    System.out.printf("%.16f ", inverse[k][j]);
+                }
+                System.out.println();
+            }
         }
-
-
     }
 }

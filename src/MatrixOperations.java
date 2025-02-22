@@ -1,24 +1,5 @@
 public class MatrixOperations {
 
-    public static double[][] matrixSum(double[][] matrixA, double[][] matrixB){
-
-        if (matrixA.length != matrixB.length || matrixA[0].length != matrixB[0].length) {
-            throw new IllegalArgumentException("Матрицы должны быть одного размера!");
-        }
-
-        int rows = matrixA.length;
-        int cols = matrixA[0].length;
-        double[][] result = new double[rows][cols];
-
-        // Сложение соответствующих элементов
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                result[i][j] = matrixA[i][j] + matrixB[i][j];
-            }
-        }
-        return result;
-    }
-
     public static GaussSystem gaussElimination(double[][] matrixA, double[] matrixB){
 
         double det = 1;
@@ -79,16 +60,16 @@ public class MatrixOperations {
         return new GaussSystem(result, det, false);
     }
 
-    public static double[][] invertMatrix(double[][] A) throws Exception {
-        int n = A.length;
-        // Формирование расширенной матрицы [A | I]
-        double[][] augmented = new double[n][2 * n];
+    public static double[][] invertMatrix(double[][] matrix) throws Exception {
+        int n = matrix.length;
+        // Формирование расширенной матрицы [A | E]
+        double[][] extendedMatrix = new double[n][2 * n];
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                augmented[i][j] = A[i][j];
+                extendedMatrix[i][j] = matrix[i][j];
             }
             for (int j = n; j < 2 * n; j++) {
-                augmented[i][j] = (i == j - n) ? 1 : 0;
+                extendedMatrix[i][j] = (i == j - n) ? 1 : 0;
             }
         }
 
@@ -96,30 +77,30 @@ public class MatrixOperations {
         for (int i = 0; i < n; i++) {
             int maxRow = i;
             for (int k = i + 1; k < n; k++) {
-                if (Math.abs(augmented[k][i]) > Math.abs(augmented[maxRow][i])) {
+                if (Math.abs(extendedMatrix[k][i]) > Math.abs(extendedMatrix[maxRow][i])) {
                     maxRow = k;
                 }
             }
-            if (Math.abs(augmented[maxRow][i]) < 1e-12) {
+            if (Math.abs(extendedMatrix[maxRow][i]) < 1e-12) {
                 throw new Exception("Матрица вырождена, обратная матрица не существует.");
             }
             // Обмен строк
-            double[] temp = augmented[i];
-            augmented[i] = augmented[maxRow];
-            augmented[maxRow] = temp;
+            double[] temp = extendedMatrix[i];
+            extendedMatrix[i] = extendedMatrix[maxRow];
+            extendedMatrix[maxRow] = temp;
 
             // Нормализация опорной строки
-            double pivot = augmented[i][i];
+            double pivot = extendedMatrix[i][i];
             for (int j = 0; j < 2 * n; j++) {
-                augmented[i][j] /= pivot;
+                extendedMatrix[i][j] /= pivot;
             }
 
             // Обнуление элементов в столбце i для всех остальных строк
             for (int k = 0; k < n; k++) {
                 if (k != i) {
-                    double factor = augmented[k][i];
+                    double factor = extendedMatrix[k][i];
                     for (int j = 0; j < 2 * n; j++) {
-                        augmented[k][j] -= factor * augmented[i][j];
+                        extendedMatrix[k][j] -= factor * extendedMatrix[i][j];
                     }
                 }
             }
@@ -129,9 +110,10 @@ public class MatrixOperations {
         double[][] inverse = new double[n][n];
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                inverse[i][j] = augmented[i][j + n];
+                inverse[i][j] = extendedMatrix[i][j + n];
             }
         }
         return inverse;
     }
+
 }
