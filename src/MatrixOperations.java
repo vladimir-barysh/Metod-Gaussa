@@ -1,5 +1,3 @@
-import java.util.List;
-
 public class MatrixOperations {
 
     public static double[][] matrixSum(double[][] matrixA, double[][] matrixB){
@@ -21,7 +19,7 @@ public class MatrixOperations {
         return result;
     }
 
-    public static double[] gaussElimination(double[][] matrixA, double[] matrixB){
+    public static GaussSystem gaussElimination(double[][] matrixA, double[] matrixB){
 
         double det = 1;
         int swapCount = 0;
@@ -36,9 +34,12 @@ public class MatrixOperations {
                     maxRow = k;
                 }
             }
+
+            // Если максимальный элемент близок к нулю, матрица вырождена
             if (Math.abs(matrixA[maxRow][i]) < 1e-12) {
-                return null;
+                return new GaussSystem(null, 0, true);
             }
+
             // Обмен строк если необходимо
             if (maxRow != i) {
                 double[] tempRow = matrixA[i];
@@ -75,6 +76,62 @@ public class MatrixOperations {
             }
             result[i] = (matrixB[i] - sum) / matrixA[i][i];
         }
-        return result;
+        return new GaussSystem(result, det, false);
+    }
+
+    public static double[][] invertMatrix(double[][] A) throws Exception {
+        int n = A.length;
+        // Формирование расширенной матрицы [A | I]
+        double[][] augmented = new double[n][2 * n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                augmented[i][j] = A[i][j];
+            }
+            for (int j = n; j < 2 * n; j++) {
+                augmented[i][j] = (i == j - n) ? 1 : 0;
+            }
+        }
+
+        // Прямой ход с выбором главного элемента
+        for (int i = 0; i < n; i++) {
+            int maxRow = i;
+            for (int k = i + 1; k < n; k++) {
+                if (Math.abs(augmented[k][i]) > Math.abs(augmented[maxRow][i])) {
+                    maxRow = k;
+                }
+            }
+            if (Math.abs(augmented[maxRow][i]) < 1e-12) {
+                throw new Exception("Матрица вырождена, обратная матрица не существует.");
+            }
+            // Обмен строк
+            double[] temp = augmented[i];
+            augmented[i] = augmented[maxRow];
+            augmented[maxRow] = temp;
+
+            // Нормализация опорной строки
+            double pivot = augmented[i][i];
+            for (int j = 0; j < 2 * n; j++) {
+                augmented[i][j] /= pivot;
+            }
+
+            // Обнуление элементов в столбце i для всех остальных строк
+            for (int k = 0; k < n; k++) {
+                if (k != i) {
+                    double factor = augmented[k][i];
+                    for (int j = 0; j < 2 * n; j++) {
+                        augmented[k][j] -= factor * augmented[i][j];
+                    }
+                }
+            }
+        }
+
+        // Извлечение обратной матрицы из расширенной матрицы
+        double[][] inverse = new double[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                inverse[i][j] = augmented[i][j + n];
+            }
+        }
+        return inverse;
     }
 }

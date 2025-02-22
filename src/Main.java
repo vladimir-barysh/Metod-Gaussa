@@ -13,28 +13,63 @@ public class Main {
 
         double[][] matrixA = matrixListA.toArray(new double[0][]);
 
-        double[] matrixB = new double[matrixListB.size()];
-        for (int i = 0; i < matrixListB.size(); i++) {
+        int n = matrixListB.size();
+        double[] matrixB = new double[n];
+        for (int i = 0; i < n; i++) {
             matrixB[i] = matrixListB.get(i);
         }
         //вычисление
-        double[] result = MatrixOperations.gaussElimination(matrixA, matrixB);
+        GaussSystem result = MatrixOperations.gaussElimination(matrixA, matrixB);
 
-        // Вывод матрицы
-        System.out.println("Считанные матрицы:");
-        int i = 0;
-        for (double[] row : matrixA) {
-            for (double num : row) {
-                System.out.print(num + " ");
+        // Вычисление невязок: r = A_orig*x - b_orig
+        double[] nevyazka = new double[n];
+        for (int i = 0; i < n; i++) {
+            double sum = 0;
+            for (int j = 0; j < n; j++) {
+                sum += matrixA[i][j] * result.getSystem()[i];
             }
-            System.out.print("|");
-            System.out.print(matrixB[i]);
-            System.out.println();
-            ++i;
+            nevyazka[i] = sum - matrixB[i];
         }
 
-        for (double num : result){
-            System.out.print(num + " ");
+        // Вычисление обратной матрицы
+        double[][] inverse = invertMatrix(matrixA);
+
+
+        // Вывод результатов
+        if (result.isSingular()){
+            System.out.println("Матрица вырождена.");
+        } else{
+            System.out.println("Получившиеся матрицы:");
+            int i = 0;
+            for (double[] row : matrixA) {
+                for (double num : row) {
+                    System.out.print(num + " ");
+                }
+                System.out.print("| ");
+                System.out.print(matrixB[i]);
+                System.out.println();
+                ++i;
+            }
+
+            System.out.println();
+
+            System.out.println("Решение системы:");
+            for (int k = 0; k < n; ++k){
+                System.out.printf("X%d = %.16f\n", k + 1, result.getSystem()[k]);
+            }
+
+            System.out.print("Определитель матрицы равен: ");
+            System.out.println(result.getDeterminant());
+
+            System.out.println("Невязки:");
+            for (int k = 0; i < n; i++) {
+                System.out.printf("r%d = %.6e%n", i + 1, nevyazka[i]);
+            }
+            System.out.println();
+
+
         }
+
+
     }
 }
