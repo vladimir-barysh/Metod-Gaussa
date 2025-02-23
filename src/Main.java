@@ -1,18 +1,21 @@
+import java.io.*;
 import java.util.*;
 
 public class Main {
     public static void main(String[] args) throws Exception {
 
-        //чтение матриц из файлов
+        //Чтение матриц из файлов
+
         String fileA = "matrixA.txt";
         String fileB = "matrixB.txt";
+        String fileRes = "result.txt";
+
         List<double[]> matrixListA = new ArrayList<>();
         List<Double> matrixListB = new ArrayList<>();
+
         MatrixFromFile.readMatrixFromFile(matrixListA, fileA, matrixListB, fileB);
 
         double[][] matrixA = matrixListA.toArray(new double[0][]);
-
-
         int n = matrixListB.size();
         double[][] matrixACopy = new double[n][n];
         for (int i = 0; i < n; ++i){
@@ -25,10 +28,12 @@ public class Main {
             matrixB[i] = matrixListB.get(i);
         }
 
-        //вычисление
+        //Вычисление решения системы
+
         GaussSystem result = MatrixOperations.gaussElimination(matrixA, matrixB);
 
-        // Вычисление невязок: r = A_orig*x - b_orig
+        //Вычисление невязок
+
         double[] nevyazka = new double[n];
         for (int i = 0; i < n; i++) {
             double sum = 0;
@@ -38,50 +43,56 @@ public class Main {
             nevyazka[i] = sum - matrixB[i];
         }
 
-        // Вычисление обратной матрицы
+        //Вычисление обратной матрицы
+
         double det = result.getDeterminant();
         double[][] inverse = MatrixOperations.invertMatrix(matrixACopy);
 
 
-        // Вывод результатов
+        //Вывод результатов
+
+        PrintWriter printer = new PrintWriter(new File(fileRes));
         if (result.isSingular()){
-            System.out.println("Матрица вырождена.");
+            printer.println("Матрица вырождена.");
         } else{
-            System.out.println("Получившиеся матрицы:");
+            printer.println("Получившиеся матрицы:");
             int i = 0;
             for (double[] row : matrixA) {
                 for (double num : row) {
-                    System.out.print(num + " ");
+                    printer.print(num + " ");
                 }
-                System.out.print("| ");
-                System.out.print(matrixB[i]);
-                System.out.println();
+                printer.print("| ");
+                printer.print(matrixB[i]);
+                printer.println();
                 ++i;
             }
 
-            System.out.println();
+            printer.println();
 
-            System.out.println("Решение системы:");
+            printer.println("Решение системы:");
             for (int k = 0; k < n; ++k){
-                System.out.printf("X%d = %.16f\n", k + 1, result.getSystem()[k]);
+                printer.printf("X%d = %.16f\n", k + 1, result.getSystem()[k]);
             }
+            printer.println();
 
-            System.out.print("Определитель матрицы равен: ");
-            System.out.println(result.getDeterminant());
+            printer.print("Определитель матрицы равен: ");
+            printer.println(result.getDeterminant());
+            printer.println();
 
-            System.out.println("Невязки:");
+            printer.println("Невязки:");
             for (int k = 0; k < n; k++) {
-                System.out.printf("r%d = %.6e%n", k + 1, nevyazka[k]);
+                printer.printf("r%d = %.6e%n", k + 1, nevyazka[k]);
             }
-            System.out.println();
+            printer.println();
 
-            System.out.println("Обратная матрица");
+            printer.println("Обратная матрица");
             for (int k = 0; k < n; ++k){
                 for (int j = 0; j < n; ++j){
-                    System.out.printf("%.16f ", inverse[k][j]);
+                    printer.printf("%.16f ", inverse[k][j]);
                 }
-                System.out.println();
+                printer.println();
             }
         }
+        printer.close();
     }
 }

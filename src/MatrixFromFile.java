@@ -2,7 +2,12 @@ import java.io.*;
 import java.util.*;
 
 public class MatrixFromFile {
+
+    //Считывание матриц из файлов
+
     public static void readMatrixFromFile(List<double[]> matrixListA, String filenameA, List<Double> matrixListB, String filenameB) {
+
+        //Первая матрица
 
         try (BufferedReader reader = new BufferedReader(new FileReader(filenameA))) {
             String line;
@@ -20,7 +25,7 @@ public class MatrixFromFile {
             System.out.println("Ошибка при чтении файла: " + e.getMessage());
         }
 
-
+        //Вторая матрица
 
         try (BufferedReader reader = new BufferedReader(new FileReader(filenameB))) {
             String line;

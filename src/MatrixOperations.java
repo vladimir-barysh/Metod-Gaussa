@@ -1,5 +1,7 @@
 public class MatrixOperations {
 
+    //Решение СЛАУ
+
     public static GaussSystem gaussElimination(double[][] matrixA, double[] matrixB){
 
         double det = 1;
@@ -8,7 +10,8 @@ public class MatrixOperations {
         double[] result = new double[n];
 
         for (int i = 0; i < n; i++) {
-            // Поиск максимального элемента в столбце i
+            //Поиск максимального элемента в столбце i
+
             int maxRow = i;
             for (int k = i + 1; k < n; k++) {
                 if (Math.abs(matrixA[k][i]) > Math.abs(matrixA[maxRow][i])) {
@@ -16,12 +19,14 @@ public class MatrixOperations {
                 }
             }
 
-            // Если максимальный элемент близок к нулю, матрица вырождена
+            //Если максимальный элемент близок к нулю, матрица вырождена
+
             if (Math.abs(matrixA[maxRow][i]) < 1e-12) {
                 return new GaussSystem(null, 0, true);
             }
 
-            // Обмен строк если необходимо
+            //Обмен строк если необходимо
+
             if (maxRow != i) {
                 double[] tempRow = matrixA[i];
                 matrixA[i] = matrixA[maxRow];
@@ -32,10 +37,12 @@ public class MatrixOperations {
                 swapCount++;
             }
 
-            // Умножаем определитель на опорный элемент
+            //Умножаем определитель на очередной элемент главной диагонали
+
             det *= matrixA[i][i];
 
-            // Обнуление элементов ниже главной диагонали
+            //Обнуление элементов ниже главной диагонали
+
             for (int j = i + 1; j < n; j++) {
                 double factor = matrixA[j][i] / matrixA[i][i];
                 for (int k = i; k < n; k++) {
@@ -45,11 +52,14 @@ public class MatrixOperations {
             }
         }
 
+        //Если меняли строки местами, то меняем знак определителя
+
         if (swapCount % 2 != 0) {
             det = -det;
         }
 
-        // Обратный ход (решение системы)
+        //Обратный ход (решение системы)
+
         for (int i = n - 1; i >= 0; i--) {
             double sum = 0;
             for (int j = i + 1; j < n; j++) {
@@ -57,12 +67,17 @@ public class MatrixOperations {
             }
             result[i] = (matrixB[i] - sum) / matrixA[i][i];
         }
+
         return new GaussSystem(result, det, false);
     }
 
+    //Вычисление обратной матрицы
+
     public static double[][] invertMatrix(double[][] matrix) throws Exception {
         int n = matrix.length;
-        // Формирование расширенной матрицы [A | E]
+
+        //Формирование расширенной матрицы [A | E]
+
         double[][] extendedMatrix = new double[n][2 * n];
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
@@ -73,7 +88,8 @@ public class MatrixOperations {
             }
         }
 
-        // Прямой ход с выбором главного элемента
+        //Прямой ход с выбором главного элемента
+
         for (int i = 0; i < n; i++) {
             int maxRow = i;
             for (int k = i + 1; k < n; k++) {
@@ -84,18 +100,22 @@ public class MatrixOperations {
             if (Math.abs(extendedMatrix[maxRow][i]) < 1e-12) {
                 throw new Exception("Матрица вырождена, обратная матрица не существует.");
             }
-            // Обмен строк
+
+            //Обмен строк
+
             double[] temp = extendedMatrix[i];
             extendedMatrix[i] = extendedMatrix[maxRow];
             extendedMatrix[maxRow] = temp;
 
-            // Нормализация опорной строки
+            //Нормализация опорной строки
+
             double pivot = extendedMatrix[i][i];
             for (int j = 0; j < 2 * n; j++) {
                 extendedMatrix[i][j] /= pivot;
             }
 
-            // Обнуление элементов в столбце i для всех остальных строк
+            //Обнуление элементов в столбце i для всех остальных строк
+
             for (int k = 0; k < n; k++) {
                 if (k != i) {
                     double factor = extendedMatrix[k][i];
@@ -106,7 +126,8 @@ public class MatrixOperations {
             }
         }
 
-        // Извлечение обратной матрицы из расширенной матрицы
+        //Извлечение обратной матрицы из расширенной матрицы
+
         double[][] inverse = new double[n][n];
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
