@@ -32,29 +32,29 @@ public class Main {
 
         GaussSystem result = MatrixOperations.gaussElimination(matrixA, matrixB);
 
-        //Вычисление невязок
-
-        double[] nevyazka = new double[n];
-        for (int i = 0; i < n; i++) {
-            double sum = 0;
-            for (int j = 0; j < n; j++) {
-                sum += matrixA[i][j] * result.getSystem()[i];
-            }
-            nevyazka[i] = sum - matrixB[i];
-        }
-
-        //Вычисление обратной матрицы
-
-        double det = result.getDeterminant();
-        double[][] inverse = MatrixOperations.invertMatrix(matrixACopy);
-
-
-        //Вывод результатов
-
         PrintWriter printer = new PrintWriter(new File(fileRes));
         if (result.isSingular()){
             printer.println("Матрица вырождена.");
         } else{
+
+            //Вычисление невязок
+
+            double[] nevyazka = new double[n];
+            for (int i = 0; i < n; i++) {
+                double sum = 0;
+                for (int j = 0; j < n; j++) {
+                    sum += matrixA[i][j] * result.getSystem()[i];
+                }
+                nevyazka[i] = sum - matrixB[i];
+            }
+
+            //Вычисление обратной матрицы
+
+            double det = result.getDeterminant();
+            double[][] inverse = MatrixOperations.invertMatrix(matrixACopy);
+
+            //Вывод результатов
+
             printer.println("Получившиеся матрицы:");
             int i = 0;
             for (double[] row : matrixA) {
