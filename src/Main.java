@@ -45,7 +45,7 @@ public class Main {
                 for (int j = 0; j < n; j++) {
                     sum += matrixA[i][j] * result.getSystem()[i];
                 }
-                nevyazka[i] = sum - matrixB[i];
+                nevyazka[i] = matrixB[i] - sum;
             }
 
             //Вычисление обратной матрицы
